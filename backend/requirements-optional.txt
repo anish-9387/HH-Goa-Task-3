@@ -1,0 +1,5 @@
+# Optional - enables InsightFace buffalo_l embeddings (higher accuracy)
+# Requires Microsoft C++ Build Tools on Windows
+# pip install -r requirements-optional.txt
+onnxruntime==1.18.1
+insightface==0.7.3

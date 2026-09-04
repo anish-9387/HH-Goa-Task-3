@@ -39,14 +39,14 @@ function setStatus(msg, isErr=false){
 
 runBtn.onclick = async ()=>{
   if(!selectedFile) return;
-  runBtn.disabled=true; setStatus("Running pipeline — face → search → blockchain ..."); setStep(1);
+  runBtn.disabled=true; setStatus("Running pipeline - face → search → blockchain ..."); setStep(1);
   const fd=new FormData(); fd.append("file", selectedFile);
   try{
     const r=await fetch("/api/pipeline/run",{method:"POST",body:fd});
     const data=await r.json();
     if(!r.ok) throw new Error(data.detail||"Pipeline failed");
     render(data);
-    setStatus(`Done in ${data.total_latency_ms}ms — verified on chain`, false);
+    setStatus(`Done in ${data.total_latency_ms}ms - verified on chain`, false);
   }catch(e){ setStatus(e.message,true);}
   finally{ runBtn.disabled=false; }
 };
@@ -72,7 +72,7 @@ function render(d){
     ${search.results.map(r=>`
       <div class="result">
         <div><a href="${r.url}" target="_blank">${r.title}</a> ${r.is_social?'<span class="badge social">social</span>':''}</div>
-        <small>${r.source} — ${r.snippet||""}</small><br>
+        <small>${r.source} - ${r.snippet||""}</small><br>
         <small style="word-break:break-all;color:var(--accent2)">${r.url}</small>
       </div>
     `).join("")}
@@ -100,8 +100,8 @@ async function loadChain(){
     <div style="margin-bottom:8px"><b>Length:</b> ${data.length} &nbsp; <span class="badge">${data.is_valid?"valid chain":"INVALID"}</span></div>
     ${data.chain.slice().reverse().slice(0,5).map(b=>`
       <div class="block">
-        <div><b>#${b.index}</b> — ${new Date(b.timestamp).toLocaleString()} <span style="float:right;font-family:monospace;font-size:11px">${b.hash.slice(0,12)}…</span></div>
-        <small>${b.data.post_title} — ${b.data.post_url}</small>
+        <div><b>#${b.index}</b> - ${new Date(b.timestamp).toLocaleString()} <span style="float:right;font-family:monospace;font-size:11px">${b.hash.slice(0,12)}…</span></div>
+        <small>${b.data.post_title} - ${b.data.post_url}</small>
         <div class="hash" style="margin-top:6px">${b.data.fingerprint.slice(0,32)}…</div>
       </div>
     `).join("")}
