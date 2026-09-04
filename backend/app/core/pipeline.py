@@ -2,9 +2,9 @@ import time
 import hashlib
 from pathlib import Path
 
-from app.core.face_engine import FaceEngine
-from app.core.search_engine import SearchEngine
-from app.core.blockchain_engine import BlockchainEngine
+from .face_engine import FaceEngine
+from .search_engine import SearchEngine
+from .blockchain_engine import BlockchainEngine
 
 class Pipeline:
     def __init__(self):

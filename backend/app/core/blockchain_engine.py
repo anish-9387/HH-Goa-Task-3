@@ -5,7 +5,7 @@ from pathlib import Path
 from datetime import datetime, timezone
 from typing import Optional, List
 
-from app.config import CHAIN_FILE, BLOCKCHAIN_DIFFICULTY
+from ..config import CHAIN_FILE, BLOCKCHAIN_DIFFICULTY
 
 class BlockchainEngine:
     def __init__(self, chain_file: Path = CHAIN_FILE, difficulty: int = BLOCKCHAIN_DIFFICULTY):

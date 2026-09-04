@@ -23,8 +23,13 @@ backend/
     models/schemas.py
     config.py
     main.py                # FastAPI app + CLI
-frontend/
-  index.html / style.css / app.js
+frontend/                  # Vite + TypeScript + pnpm (HHGOA theme)
+  src/
+    main.ts
+    style.css              # --green:#0B6839 / --yellow:#FEE101 (hhgoa.com)
+  index.html
+  vite.config.ts
+  dist/                    # built, served by FastAPI at /
 data/
   chain.json
   uploads/
@@ -43,8 +48,16 @@ pip install -r backend/requirements.txt
 # optional: higher-accuracy InsightFace (requires C++ Build Tools on Windows)
 # pip install -r backend/requirements-optional.txt
 
+# frontend - Vite + TypeScript + pnpm (HHGOA theme: green #0B6839 / yellow #FEE101)
+cd frontend
+pnpm install
+pnpm build          # builds to frontend/dist (served by FastAPI)
+cd ..
+
 # run API + frontend (http://localhost:8000 , docs at /docs)
 uvicorn backend.app.main:app --reload --port 8000
+# dev frontend with HMR (proxies /api to FastAPI)
+# cd frontend && pnpm dev   # http://localhost:5173
 
 # or CLI
 python -m backend.app.main --image path/to/face.jpg

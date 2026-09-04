@@ -2,8 +2,8 @@ import shutil
 import uuid
 from pathlib import Path
 from fastapi import APIRouter, UploadFile, File, HTTPException
-from app.config import UPLOAD_DIR
-from app.core.pipeline import Pipeline
+from ..config import UPLOAD_DIR
+from ..core.pipeline import Pipeline
 
 router = APIRouter()
 pipeline = Pipeline()
@@ -70,7 +70,7 @@ async def add_block(payload: dict):
         if k not in payload:
             raise HTTPException(400, f"Missing {k}")
     import hashlib
-    from app.core.face_engine import FaceEngine
+    from ..core.face_engine import FaceEngine
     img_hash = payload.get("image_hash", hashlib.sha256(payload["post_url"].encode()).hexdigest())
     txt_hash = hashlib.sha256(payload["post_title"].encode()).hexdigest()
     fp = hashlib.sha256(f"{img_hash}:{txt_hash}".encode()).hexdigest()

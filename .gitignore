@@ -1,7 +1,7 @@
 __pycache__/
 *.pyc
 *.pyo
-venv/
+.venv/
 venv/
 .env
 data/uploads/*
@@ -9,4 +9,6 @@ data/uploads/*
 data/chain.json
 insightface_models/
 .DS_Store
-Task 3_HHG.md
+frontend/node_modules/
+frontend/.vite/
+tmp.txt
