@@ -1,0 +1,12 @@
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+venv/
+.env
+data/uploads/*
+!data/uploads/.gitkeep
+data/chain.json
+insightface_models/
+.DS_Store
+Task 3_HHG.md

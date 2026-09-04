@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HH Goa 2026 — Face → Search → Blockchain</title>
+<link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+<header>
+  <div class="wrap">
+    <h1>Face Identification & Blockchain Verification</h1>
+    <p>HH Goa 2026 — Task 3 • Face scan → Web search → On-chain verification</p>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <section class="pipeline-bar">
+    <div class="step active" id="s1"><span>1</span> Face Scan</div>
+    <div class="line"></div>
+    <div class="step" id="s2"><span>2</span> Web Search</div>
+    <div class="line"></div>
+    <div class="step" id="s3"><span>3</span> Blockchain</div>
+  </section>
+
+  <section class="card upload-card">
+    <h2>Upload face image</h2>
+    <div id="drop" class="drop">
+      <input type="file" id="file" accept="image/*" hidden>
+      <p>Drag & drop or <button id="browse" class="link">browse</button></p>
+      <small>JPG / PNG — any face image</small>
+    </div>
+    <div id="preview" class="preview hidden">
+      <img id="previewImg">
+      <div class="preview-meta"><span id="fileName"></span><button id="run" class="btn primary">Run Pipeline →</button></div>
+    </div>
+    <div id="status" class="status"></div>
+  </section>
+
+  <section id="results" class="results hidden">
+    <div class="grid">
+      <div class="card">
+        <h3>① Face Identification</h3>
+        <div id="faceBox"></div>
+      </div>
+      <div class="card">
+        <h3>② Social / Web Search</h3>
+        <div id="searchBox"></div>
+      </div>
+      <div class="card">
+        <h3>③ Blockchain Verification</h3>
+        <div id="chainBox"></div>
+      </div>
+    </div>
+    <div class="card">
+      <h3>Blockchain Explorer</h3>
+      <div id="explorer"></div>
+    </div>
+    <div class="card">
+      <h3>Verify fingerprint</h3>
+      <div class="verify-row">
+        <input id="fpInput" placeholder="Enter fingerprint / data_hash / block hash">
+        <button id="verifyBtn" class="btn">Verify</button>
+      </div>
+      <div id="verifyOut"></div>
+    </div>
+  </section>
+
+</main>
+<script src="/static/app.js"></script>
+</body>
+</html>
