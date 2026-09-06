@@ -1,0 +1,29 @@
+[project]
+name = "backend"
+version = "0.1.0"
+description = "Backend API for Face Identification & Blockchain Verification"
+readme = "../README.md"
+requires-python = ">=3.10,<3.13"
+dependencies = [
+    "fastapi>=0.110.2",
+    "uvicorn[standard]>=0.29.0",
+    "python-multipart>=0.0.9",
+    "pydantic>=2.8.2",
+    "opencv-python>=4.9.0.80",
+    "numpy>=1.26.4",
+    "requests>=2.32.3",
+    "python-dotenv>=1.0.1",
+]
+
+[project.optional-dependencies]
+insightface = [
+    "onnxruntime>=1.18.1",
+    "insightface>=0.7.3",
+]
+
+[tool.poetry]
+packages = [{include = "app"}]
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"

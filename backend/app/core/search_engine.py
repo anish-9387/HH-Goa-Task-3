@@ -16,9 +16,11 @@ CURATED_SOCIAL_POSTS = [
     {"title": "LinkedIn professional portrait", "url": "https://www.linkedin.com/posts/activity-7180000000000000000", "thumbnail": "https://picsum.photos/seed/face5/400/400", "snippet": "Professional headshot matching query face", "source": "linkedin.com"},
 ]
 
+from ..config import SERPAPI_KEY
+
 class SearchEngine:
     def __init__(self):
-        self.serpapi_key = os.getenv("SERPAPI_API_KEY", "")
+        self.serpapi_key = SERPAPI_KEY or os.getenv("SERPAPI_API_KEY", "")
         self.serpapi_key = self.serpapi_key.strip()
 
     def reverse_search(self, image_path: str) -> dict:
@@ -60,46 +62,79 @@ class SearchEngine:
 
     def _serpapi_reverse(self, image_path: str) -> List[dict]:
         import requests
-        with open(image_path, "rb") as f:
-            b64 = base64.b64encode(f.read()).decode()
+        tmp_url = self._upload_temp(image_path)
+        if not tmp_url:
+            return []
 
         url = "https://serpapi.com/search"
-        tmp_url = self._upload_temp(image_path)
-        params = {
-            "engine": "google_reverse_image",
-            "image_url": tmp_url,
-            "api_key": self.serpapi_key
-        }
-        r = requests.get(url, params=params, timeout=20)
-        r.raise_for_status()
-        data = r.json()
-
         out = []
-        for item in data.get("image_results", [])[:5]:
-            link = item.get("link", "")
-            out.append({
-                "title": item.get("title", "Reverse image match"),
-                "url": link,
-                "thumbnail": item.get("thumbnail", ""),
-                "snippet": item.get("snippet", ""),
-                "source": self._domain(link),
-                "is_social": self._is_social(link)
-            })
+
+        # 1. Try Google Reverse Image
+        try:
+            params = {
+                "engine": "google_reverse_image",
+                "image_url": tmp_url,
+                "api_key": self.serpapi_key
+            }
+            r = requests.get(url, params=params, timeout=20)
+            if r.status_code == 200:
+                data = r.json()
+                for item in data.get("image_results", [])[:5]:
+                    link = item.get("link", "")
+                    if link:
+                        out.append({
+                            "title": item.get("title", "Reverse image match"),
+                            "url": link,
+                            "thumbnail": item.get("thumbnail", ""),
+                            "snippet": item.get("snippet", ""),
+                            "source": self._domain(link),
+                            "is_social": self._is_social(link)
+                        })
+                for item in data.get("search_results", [])[:5]:
+                    link = item.get("link", "")
+                    if link and not any(o["url"] == link for o in out):
+                        out.append({
+                            "title": item.get("title", "Search match"),
+                            "url": link,
+                            "thumbnail": item.get("thumbnail", ""),
+                            "snippet": item.get("snippet", ""),
+                            "source": self._domain(link),
+                            "is_social": self._is_social(link)
+                        })
+        except Exception as e:
+            print(f"SerpAPI google_reverse_image failed: {e}")
+
+        # 2. If no results, try Google Lens engine
         if not out:
-            for item in data.get("search_results", [])[:5]:
-                link = item.get("link", "")
-                out.append({
-                    "title": item.get("title", ""),
-                    "url": link,
-                    "thumbnail": item.get("thumbnail", ""),
-                    "snippet": item.get("snippet", ""),
-                    "source": self._domain(link),
-                    "is_social": self._is_social(link)
-                })
-        return [r for r in out if r["url"]]
+            try:
+                params_lens = {
+                    "engine": "google_lens",
+                    "url": tmp_url,
+                    "api_key": self.serpapi_key
+                }
+                r = requests.get(url, params=params_lens, timeout=20)
+                if r.status_code == 200:
+                    data = r.json()
+                    for item in data.get("visual_matches", [])[:5]:
+                        link = item.get("link", "")
+                        if link:
+                            out.append({
+                                "title": item.get("title", "Visual match"),
+                                "url": link,
+                                "thumbnail": item.get("thumbnail", ""),
+                                "snippet": item.get("source", ""),
+                                "source": self._domain(link),
+                                "is_social": self._is_social(link)
+                            })
+            except Exception as e:
+                print(f"SerpAPI google_lens failed: {e}")
+
+        return [r for r in out if r.get("url")]
 
     def _lens_scrape(self, image_path: str) -> List[dict]:
         tmp_url = self._upload_temp(image_path)
+        if not tmp_url:
+            return []
         headers = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"}
         r = requests.get("https://lens.google.com/uploadbyurl", params={"url": tmp_url}, headers=headers, timeout=15, allow_redirects=True)
         if r.status_code != 200:
@@ -134,7 +169,9 @@ class SearchEngine:
                     data = r.json()
                     url = data.get("data", {}).get("url", "")
                     if url:
-                        return url.replace("tmpfiles.org/dl/", "tmpfiles.org/dl/")
+                        if "tmpfiles.org/dl/" not in url:
+                            url = url.replace("tmpfiles.org/", "tmpfiles.org/dl/")
+                        return url
         except Exception:
             pass
         try:

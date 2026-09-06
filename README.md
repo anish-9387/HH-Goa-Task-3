@@ -23,6 +23,9 @@ backend/
     models/schemas.py
     config.py
     main.py                # FastAPI app + CLI
+  pyproject.toml           # Poetry project configuration & dependencies
+  requirements.txt
+  requirements-optional.txt
 frontend/                  # Vite + TypeScript + pnpm (HHGOA theme)
   src/
     main.ts
@@ -36,6 +39,19 @@ data/
 ```
 
 ## Quick start
+
+### 1. Backend Setup
+
+#### Option A: Using Poetry (Recommended)
+```bash
+cd backend
+poetry install
+
+# Optional: higher-accuracy InsightFace (requires C++ Build Tools on Windows)
+poetry install --all-extras
+```
+
+#### Option B: Using pip & venv
 ```bash
 python -m venv .venv
 # Windows
@@ -45,21 +61,45 @@ python -m venv .venv
 
 pip install -r backend/requirements.txt
 
-# optional: higher-accuracy InsightFace (requires C++ Build Tools on Windows)
+# Optional: higher-accuracy InsightFace (requires C++ Build Tools on Windows)
 # pip install -r backend/requirements-optional.txt
+```
 
-# frontend - Vite + TypeScript + pnpm (HHGOA theme: green #0B6839 / yellow #FEE101)
+### 2. Frontend Setup
+```bash
+# Vite + TypeScript + pnpm (HHGOA theme: green #0B6839 / yellow #FEE101)
 cd frontend
 pnpm install
 pnpm build          # builds to frontend/dist (served by FastAPI)
 cd ..
+```
 
-# run API + frontend (http://localhost:8000 , docs at /docs)
+### 3. Running API & CLI
+
+#### API Server (http://localhost:8000, docs at /docs)
+```bash
+# If using Poetry (from backend directory)
+cd backend
+poetry run uvicorn app.main:app --reload --port 8000
+
+# Or from root with activated virtual environment
 uvicorn backend.app.main:app --reload --port 8000
-# dev frontend with HMR (proxies /api to FastAPI)
-# cd frontend && pnpm dev   # http://localhost:5173
+```
 
-# or CLI
+#### Frontend Dev Server (HMR)
+```bash
+cd frontend && pnpm dev   # http://localhost:5173 (proxies /api to FastAPI)
+```
+
+#### CLI Usage
+```bash
+# Using Poetry (from backend directory)
+cd backend
+poetry run python -m app.main --image path/to/face.jpg
+poetry run python -m app.main --chain
+poetry run python -m app.main --verify <fingerprint>
+
+# Or with activated venv from root
 python -m backend.app.main --image path/to/face.jpg
 python -m backend.app.main --chain
 python -m backend.app.main --verify <fingerprint>

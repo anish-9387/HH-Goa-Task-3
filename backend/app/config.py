@@ -1,10 +1,17 @@
 import os
 from pathlib import Path
+from dotenv import load_dotenv
 
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
+BACKEND_DIR = Path(__file__).resolve().parent.parent
 DATA_DIR = BASE_DIR / "data"
 UPLOAD_DIR = DATA_DIR / "uploads"
 CHAIN_FILE = DATA_DIR / "chain.json"
+
+# Load backend/.env then root .env if present
+load_dotenv(BACKEND_DIR / ".env")
+load_dotenv(BASE_DIR / ".env")
+load_dotenv()
 
 UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
 DATA_DIR.mkdir(parents=True, exist_ok=True)
