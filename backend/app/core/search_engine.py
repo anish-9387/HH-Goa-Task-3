@@ -162,22 +162,27 @@ class SearchEngine:
         return results
 
     def _upload_temp(self, image_path: str) -> str:
+        # Primary: freeimage.host — returns real image/jpeg URLs Google can fetch
         try:
             with open(image_path, "rb") as f:
-                r = requests.post("https://tmpfiles.org/api/v1/upload", files={"file": f}, timeout=15)
+                r = requests.post(
+                    "https://freeimage.host/api/1/upload",
+                    params={"key": "6d207e02198a847aa98d0a2a901485a5"},
+                    files={"source": f},
+                    timeout=20
+                )
                 if r.status_code == 200:
                     data = r.json()
-                    url = data.get("data", {}).get("url", "")
+                    url = data.get("image", {}).get("url", "")
                     if url:
-                        if "tmpfiles.org/dl/" not in url:
-                            url = url.replace("tmpfiles.org/", "tmpfiles.org/dl/")
                         return url
         except Exception:
             pass
+        # Secondary: catbox.moe
         try:
             with open(image_path, "rb") as f:
                 r = requests.post("https://catbox.moe/user/api.php", data={"reqtype": "fileupload"}, files={"fileToUpload": f}, timeout=15)
-                if r.status_code == 200 and r.text.startswith("http"):
+                if r.status_code == 200 and r.text.strip().startswith("http"):
                     return r.text.strip()
         except Exception:
             pass

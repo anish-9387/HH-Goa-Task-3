@@ -27,8 +27,16 @@ class Pipeline:
             "message": f"Detected {len(face_raw['faces'])} face(s)"
         }
 
-        search_input = face_raw["cropped"] or image_path
+        # Search with original image first — gives Google full context to identify the person.
+        # Face crop alone often matches accessories (glasses, jewelry) rather than the person.
+        search_input = image_path
         search_raw = self.search.reverse_search(search_input)
+
+        # If no results from original, try the face crop
+        if not search_raw["results"] and face_raw["cropped"] and face_raw["cropped"] != image_path:
+            search_input = face_raw["cropped"]
+            search_raw = self.search.reverse_search(search_input)
+
         if not search_raw["results"]:
             raise RuntimeError("No matching posts found")
 
